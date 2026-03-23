@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DermaPlan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+–cream:#FFFCF7;–cream2:#FFF8EE;–warm:#F5EDE3;
+–ink:#1A1A1A;–ink2:#3D3D3D;–ink3:#7A7A7A;–ink4:#ABABAB;–ink5:#D4D0CB;
+–forest:#1B6B4A;–forest2:#15573C;–forest-soft:rgba(27,107,74,.08);–forest-med:rgba(27,107,74,.15);
+–terra:#C4704B;–terra-soft:rgba(196,112,75,.08);
+–nahdi:#1B8C5A;–nahdi-bg:#F0FAF5;–nahdi-bd:#C8E6D8;
+–united:#2B5EA7;–united-bg:#F0F5FC;–united-bd:#C3D5ED;
+–dawaa:#A73B2B;–dawaa-bg:#FCF0EE;–dawaa-bd:#EDCBC3;
+}
+
+html{scroll-behavior:smooth}
+body{
+font-family:‘Cairo’,‘Plus Jakarta Sans’,sans-serif;
+background:var(–cream);color:var(–ink);min-height:100vh;overflow-x:hidden;
+}
+[dir=“ltr”] body{font-family:‘Plus Jakarta Sans’,‘Cairo’,sans-serif}
+
+/* Fix Arabic: kill letter-spacing in RTL — it breaks connected script */
+[dir=“rtl”] *{letter-spacing:0 !important}
+[dir=“rtl”] body{word-spacing:-.02em}
+/* Arabic headings: use Cairo 900 instead of Fraunces (Latin-only) */
+[dir=“rtl”] .lh-name,[dir=“rtl”] .page-hdr h1,[dir=“rtl”] .hdr-title,
+[dir=“rtl”] .res-hdr h2{font-family:‘Cairo’,sans-serif !important}
+
+/* =============================================
+LANGUAGE - SPLIT SCREEN
+============================================= */
+.lang-gate{
+position:fixed;inset:0;z-index:9000;display:flex;
+transition:opacity .6s ease .1s,visibility .6s;
+}
+.lang-gate.exit{opacity:0;visibility:hidden;pointer-events:none}
+
+.lang-half{
+flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+cursor:pointer;transition:all .5s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;
+}
+.lang-half::after{
+content:’’;position:absolute;inset:0;opacity:0;transition:opacity .4s;
+}
+.lang-half:hover::after{opacity:1}
+.lang-half:hover{flex:1.15}
+
+.lang-half.ar-side{background:var(–forest)}
+.lang-half.ar-side::after{background:rgba(0,0,0,.08)}
+.lang-half.en-side{background:var(–cream)}
+.lang-half.en-side::after{background:rgba(0,0,0,.03)}
+
+.lang-half .lh-content{position:relative;z-index:1;text-align:center;padding:20px}
+.lang-half .lh-label{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px;opacity:.6}
+.lang-half .lh-name{font-family:‘Fraunces’,serif;font-size:2.6rem;font-weight:900;margin-bottom:10px;letter-spacing:-.03em}
+.lang-half .lh-sub{font-size:.88rem;font-weight:400;opacity:.7;max-width:220px;margin:0 auto;line-height:1.6}
+.lang-half .lh-arrow{
+margin-top:28px;width:48px;height:48px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+transition:transform .3s;font-size:1.2rem;
+margin-inline:auto;
+}
+.lang-half:hover .lh-arrow{transform:scale(1.15)}
+
+.ar-side .lh-label,.ar-side .lh-name,.ar-side .lh-sub{color:#fff}
+.ar-side .lh-arrow{background:rgba(255,255,255,.15);color:#fff}
+.en-side .lh-label,.en-side .lh-name,.en-side .lh-sub{color:var(–ink)}
+.en-side .lh-arrow{background:var(–forest-soft);color:var(–forest)}
+
+/* Decorative shapes */
+.lang-half .decor{position:absolute;opacity:.06;pointer-events:none}
+.ar-side .decor{width:300px;height:300px;border-radius:50%;border:40px solid #fff;bottom:-80px;right:-60px}
+.en-side .decor{width:250px;height:250px;border-radius:50%;border:35px solid var(–forest);top:-60px;left:-50px}
+
+@media(max-width:600px){
+.lang-gate{flex-direction:column}
+.lang-half .lh-name{font-size:2rem}
+.lang-half:hover{flex:1.08}
+}
+
+/* =============================================
+APP SHELL
+============================================= */
+.app{
+max-width:580px;margin:0 auto;padding:0 20px 100px;
+opacity:0;transform:translateY(16px);
+transition:all .6s cubic-bezier(.22,1,.36,1) .4s;
+}
+.app.live{opacity:1;transform:none}
+
+/* =============================================
+HEADER
+============================================= */
+.hdr{
+display:flex;align-items:center;justify-content:space-between;
+padding:22px 0;position:sticky;top:0;z-index:100;
+background:var(–cream);
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-mark{
+width:36px;height:36px;border-radius:10px;
+background:var(–forest);position:relative;overflow:hidden;
+display:flex;align-items:center;justify-content:center;
+}
+.hdr-mark::before{
+content:’’;position:absolute;width:18px;height:2px;background:#fff;border-radius:2px;
+}
+.hdr-mark::after{
+content:’’;position:absolute;width:2px;height:18px;background:#fff;border-radius:2px;
+}
+.hdr-title{font-family:‘Fraunces’,serif;font-weight:800;font-size:1.05rem;letter-spacing:-.02em}
+.hdr-lang{
+padding:7px 18px;border-radius:50px;border:1.5px solid var(–ink5);
+background:transparent;font-size:.76rem;font-weight:600;color:var(–ink3);
+cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.hdr-lang:hover{border-color:var(–forest);color:var(–forest)}
+
+/* =============================================
+PAGE HEADER
+============================================= */
+.page-hdr{padding:36px 0 32px}
+.page-hdr .overline{
+font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+color:var(–forest);margin-bottom:14px;
+display:flex;align-items:center;gap:8px;
+}
+.page-hdr .overline::before{content:’’;width:20px;height:2px;background:var(–forest);border-radius:2px}
+.page-hdr h1{
+font-family:‘Fraunces’,‘Cairo’,serif;
+font-size:2rem;font-weight:900;line-height:1.25;letter-spacing:-.03em;
+margin-bottom:14px;
+}
+.page-hdr p{font-size:.92rem;color:var(–ink3);line-height:1.8;max-width:440px}
+
+/* =============================================
+FORM
+============================================= */
+.form-wrap{display:flex;flex-direction:column;gap:20px}
+
+.form-block{
+background:var(–white,#fff);border-radius:20px;padding:28px 24px;
+border:1px solid var(–ink5);
+transition:border-color .3s,box-shadow .3s;
+}
+.form-block:focus-within{border-color:var(–forest);box-shadow:0 0 0 4px var(–forest-soft)}
+
+.fb-label{
+font-size:.72rem;font-weight:700;color:var(–ink3);letter-spacing:.12em;
+text-transform:uppercase;margin-bottom:16px;
+display:flex;align-items:center;gap:10px;
+}
+.fb-num{
+width:24px;height:24px;border-radius:7px;background:var(–forest);color:#fff;
+display:inline-flex;align-items:center;justify-content:center;
+font-size:.68rem;font-weight:700;letter-spacing:0;
+}
+
+/* TYPE SELECTOR - Big visual cards */
+.type-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.type-card{
+border:2px solid var(–ink5);border-radius:16px;padding:24px 16px;
+text-align:center;cursor:pointer;transition:all .3s;background:#fff;
+position:relative;overflow:hidden;
+}
+.type-card::before{
+content:’’;position:absolute;inset:0;
+background:var(–forest-soft);opacity:0;transition:opacity .3s;
+}
+.type-card:hover{border-color:var(–ink4)}
+.type-card.sel{border-color:var(–forest);background:var(–forest-soft)}
+.type-card.sel::before{opacity:1}
+.tc-visual{
+width:56px;height:56px;border-radius:16px;margin:0 auto 14px;
+display:flex;align-items:center;justify-content:center;
+position:relative;z-index:1;
+}
+.type-card[data-v=“skin”] .tc-visual{background:linear-gradient(135deg,#FDDCB5,#FBC9A8)}
+.type-card[data-v=“hair”] .tc-visual{background:linear-gradient(135deg,#C8E6C9,#A5D6A7)}
+.tc-visual svg{width:28px;height:28px}
+.tc-name{font-weight:700;font-size:.95rem;position:relative;z-index:1}
+.type-card.sel .tc-name{color:var(–forest)}
+
+/* SUBTYPE */
+.sub-btns{display:flex;gap:10px;flex-wrap:wrap}
+.sub-btn{
+flex:1;min-width:0;padding:14px 12px;border:2px solid var(–ink5);border-radius:12px;
+background:#fff;font-size:.85rem;font-weight:600;color:var(–ink2);
+cursor:pointer;font-family:inherit;transition:all .25s;text-align:center;
+}
+.sub-btn:hover{border-color:var(–ink4)}
+.sub-btn.sel{border-color:var(–forest);color:var(–forest);background:var(–forest-soft)}
+
+/* TEXTAREA */
+.concern-ta{
+width:100%;min-height:110px;padding:18px;border:2px solid var(–ink5);
+border-radius:14px;background:var(–cream2);font-size:.92rem;font-family:inherit;
+color:var(–ink);resize:vertical;transition:border-color .25s;line-height:1.9;
+}
+.concern-ta:focus{outline:none;border-color:var(–forest)}
+.concern-ta::placeholder{color:var(–ink4)}
+.ta-hint{font-size:.74rem;color:var(–ink4);margin-top:10px;line-height:1.6}
+
+/* SUBMIT */
+.submit-btn{
+width:100%;padding:20px;border:none;border-radius:16px;
+background:var(–forest);color:#fff;font-size:1.05rem;font-weight:700;
+cursor:pointer;font-family:inherit;transition:all .3s;
+display:flex;align-items:center;justify-content:center;gap:10px;
+margin-top:4px;
+}
+.submit-btn:hover:not(:disabled){
+background:var(–forest2);transform:translateY(-2px);
+box-shadow:0 12px 32px rgba(27,107,74,.2);
+}
+.submit-btn:disabled{opacity:.35;cursor:not-allowed}
+.submit-btn .sb-ico{font-size:1.1rem}
+.submit-btn .sb-spin{display:none;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);
+border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
+.submit-btn.busy .sb-text,.submit-btn.busy .sb-ico{display:none}
+.submit-btn.busy .sb-spin{display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* =============================================
+RESULTS
+============================================= */
+.results{margin-top:36px;animation:slideUp .5s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+.res-hdr{margin-bottom:28px}
+.res-hdr .overline{
+font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+color:var(–terra);margin-bottom:10px;
+display:flex;align-items:center;gap:8px;
+}
+.res-hdr .overline::before{content:’’;width:20px;height:2px;background:var(–terra);border-radius:2px}
+.res-hdr h2{font-family:‘Fraunces’,‘Cairo’,serif;font-size:1.6rem;font-weight:900;letter-spacing:-.03em;margin-bottom:6px}
+.res-hdr p{font-size:.85rem;color:var(–ink3)}
+
+/* PHARMACY SECTION */
+.pharm-sec{margin-bottom:20px}
+.pharm-bar{
+display:flex;align-items:center;gap:12px;padding:16px 20px;
+background:#fff;border:1.5px solid var(–ink5);border-radius:16px;
+cursor:pointer;transition:all .25s;
+}
+.pharm-bar:hover{box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.pharm-sec.open .pharm-bar{border-radius:16px 16px 0 0;border-bottom-color:transparent}
+
+.pb-dot{width:14px;height:14px;border-radius:5px;flex-shrink:0}
+.pharm-sec.nh .pb-dot{background:var(–nahdi)}
+.pharm-sec.un .pb-dot{background:var(–united)}
+.pharm-sec.dw .pb-dot{background:var(–dawaa)}
+.pb-info{flex:1}
+.pb-name{font-weight:700;font-size:.92rem}
+.pb-en{font-size:.72rem;color:var(–ink4);margin-top:1px}
+.pb-count{
+font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:8px;
+}
+.pharm-sec.nh .pb-count{background:var(–nahdi-bg);color:var(–nahdi)}
+.pharm-sec.un .pb-count{background:var(–united-bg);color:var(–united)}
+.pharm-sec.dw .pb-count{background:var(–dawaa-bg);color:var(–dawaa)}
+.pb-arrow{
+width:28px;height:28px;border-radius:8px;background:var(–warm);
+display:flex;align-items:center;justify-content:center;
+transition:transform .3s;font-size:.65rem;color:var(–ink3);
+}
+.pharm-sec.open .pb-arrow{transform:rotate(180deg)}
+
+.pharm-body{
+max-height:0;overflow:hidden;
+transition:max-height .5s cubic-bezier(.22,1,.36,1);
+border:1.5px solid var(–ink5);border-top:none;border-radius:0 0 16px 16px;
+background:var(–cream2);
+}
+.pharm-sec.open .pharm-body{max-height:4000px}
+.pharm-inner{padding:12px 14px}
+
+/* PRODUCT CARD */
+.prod-card{
+background:#fff;border-radius:14px;padding:18px 20px;margin-bottom:10px;
+border:1px solid var(–ink5);transition:all .25s;
+}
+.prod-card:last-child{margin-bottom:0}
+.prod-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-2px)}
+
+.prod-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.prod-cat{
+font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+padding:4px 12px;border-radius:6px;
+}
+.pharm-sec.nh .prod-cat{background:var(–nahdi-bg);color:var(–nahdi);border:1px solid var(–nahdi-bd)}
+.pharm-sec.un .prod-cat{background:var(–united-bg);color:var(–united);border:1px solid var(–united-bd)}
+.pharm-sec.dw .prod-cat{background:var(–dawaa-bg);color:var(–dawaa);border:1px solid var(–dawaa-bd)}
+.prod-open{
+padding:7px 16px;border-radius:8px;border:1.5px solid var(–forest-med);
+background:var(–forest-soft);font-size:.74rem;font-weight:700;color:var(–forest);
+text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:4px;
+flex-shrink:0;
+}
+.prod-open:hover{background:var(–forest);color:#fff;border-color:var(–forest)}
+
+.prod-name{font-weight:700;font-size:.95rem;color:var(–ink);margin-bottom:5px;
+direction:ltr;unicode-bidi:plaintext}
+[dir=“rtl”] .prod-name{text-align:right}
+.prod-use{font-size:.82rem;color:var(–ink3);line-height:1.8}
+
+/* INSTRUCTIONS */
+.ins{
+background:#fff;border-radius:16px;padding:24px;margin-top:20px;
+border:1px solid var(–ink5);
+}
+.ins h4{font-weight:700;font-size:.95rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ins ol{padding-inline-start:18px}
+.ins li{font-size:.85rem;color:var(–ink2);line-height:2.1}
+.ins li::marker{color:var(–forest);font-weight:700}
+
+/* RESET */
+.again{
+display:flex;align-items:center;justify-content:center;gap:8px;
+margin:24px auto 0;padding:14px 32px;border-radius:50px;
+border:2px solid var(–ink5);background:#fff;
+font-size:.88rem;font-weight:600;color:var(–ink2);cursor:pointer;
+font-family:inherit;transition:all .25s;
+}
+.again:hover{border-color:var(–forest);color:var(–forest)}
+.again svg{width:16px;height:16px}
+
+/* MESSAGES */
+.msg{text-align:center;padding:24px;border-radius:14px;margin-top:20px;font-size:.88rem;font-weight:600}
+.msg.er{background:#FFF0EE;color:var(–dawaa);border:1px solid var(–dawaa-bd)}
+.msg.lm{background:#FFF8EE;color:var(–terra);border:1px solid #F0D8C0}
+
+.foot{text-align:center;margin-top:56px;padding-top:24px;border-top:1px solid var(–ink5);
+font-size:.72rem;color:var(–ink4)}
+
+/* =============================================
+RESPONSIVE
+============================================= */
+@media(max-width:520px){
+.page-hdr h1{font-size:1.55rem}
+.form-block{padding:22px 18px}
+.prod-top{flex-wrap:wrap}
+.prod-open{width:100%;justify-content:center;margin-top:6px}
+.sub-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sub-btn{min-width:0}
+}
+</style>
+
+</head>
+<body dir="rtl">
+
+<!-- ============ LANGUAGE GATE ============ -->
+
+<div class="lang-gate" id="gate">
+  <div class="lang-half ar-side" onclick="launch('ar')">
+    <div class="decor"></div>
+    <div class="lh-content">
+      <div class="lh-label">اختر لغتك</div>
+      <div class="lh-name">العربية</div>
+      <div class="lh-sub">تحليل ذكي لمشاكل البشرة والشعر</div>
+      <div class="lh-arrow">→</div>
+    </div>
+  </div>
+  <div class="lang-half en-side" onclick="launch('en')">
+    <div class="decor"></div>
+    <div class="lh-content">
+      <div class="lh-label">Choose language</div>
+      <div class="lh-name">English</div>
+      <div class="lh-sub">Smart analysis for skin & hair concerns</div>
+      <div class="lh-arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+
+<div class="app" id="app">
+
+  <!-- HEADER -->
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-mark"></div>
+      <span class="hdr-title">DermaPlan</span>
+    </div>
+    <button class="hdr-lang" id="swBtn" onclick="sw()"></button>
+  </div>
+
+  <!-- PAGE HEADER -->
+
+  <div class="page-hdr">
+    <div class="overline" id="ov"></div>
+    <h1 id="h1"></h1>
+    <p id="pp"></p>
+  </div>
+
+  <!-- FORM -->
+
+  <div id="formArea">
+    <div class="form-wrap">
+
+```
+  <!-- 1 TYPE -->
+  <div class="form-block">
+    <div class="fb-label"><span class="fb-num">1</span><span id="lb1"></span></div>
+    <div class="type-cards">
+      <div class="type-card" data-v="skin" onclick="pickT(this)">
+        <div class="tc-visual">
+          <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="#C4704B" stroke-width="2"/><path d="M16 10v4m0 4h.01" stroke="#C4704B" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="tc-name" id="nSkin"></div>
+      </div>
+      <div class="type-card" data-v="hair" onclick="pickT(this)">
+        <div class="tc-visual">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M10 22c0-6 3-12 6-12s6 6 6 12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><path d="M13 16c1-2 2-3 3-3s2 1 3 3" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="tc-name" id="nHair"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 SUBTYPE -->
+  <div class="form-block">
+    <div class="fb-label"><span class="fb-num">2</span><span id="lb2"></span></div>
+    <div class="sub-btns">
+      <button class="sub-btn" data-v="oily" onclick="pickS(this)" id="bO"></button>
+      <button class="sub-btn" data-v="dry" onclick="pickS(this)" id="bD"></button>
+      <button class="sub-btn" data-v="combination" onclick="pickS(this)" id="bC"></button>
+      <button class="sub-btn" data-v="normal" onclick="pickS(this)" id="bN"></button>
+    </div>
+  </div>
+
+  <!-- 3 CONCERN -->
+  <div class="form-block">
+    <div class="fb-label"><span class="fb-num">3</span><span id="lb3"></span></div>
+    <textarea class="concern-ta" id="cta" rows="3"></textarea>
+    <div class="ta-hint" id="hint"></div>
+  </div>
+
+  <!-- SUBMIT -->
+  <button class="submit-btn" id="subBtn" onclick="analyze()">
+    <span class="sb-ico" id="sbIco">↗</span>
+    <span class="sb-text" id="sbTxt"></span>
+    <div class="sb-spin"></div>
+  </button>
+
+</div>
+```
+
+  </div>
+
+  <!-- RESULTS -->
+
+  <div id="resBox"></div>
+
+  <div class="foot" id="ft"></div>
+</div>
+
+<script>
+const LIM=50,STK='dp4';
+let lang='ar',vT=null,vS=null;
+
+const T={
+  ar:{
+    sw:'English',
+    ov:'DermaPlan · مستشارك الجلدي',
+    h1:'احصل على خطة علاجية مخصصة لبشرتك أو شعرك',
+    pp:'وصّف مشكلتك وسيقوم الذكاء الاصطناعي بتحليلها واقتراح المنتجات المناسبة من الصيدليات السعودية',
+    lb1:'حدد نوع المشكلة',lb2:'حدد نوع البشرة أو الشعر',lb3:'اكتب وصف مشكلتك',
+    skin:'بشرة',hair:'شعر',
+    oily:'دهني',dry:'جاف',combo:'مختلط',normal:'عادي',
+    hint:'كن دقيقاً في الوصف — مثال: حبوب ملتهبة في الخدين مع بشرة دهنية · قشرة وحكة شديدة · تساقط من مقدمة الرأس',
+    go:'ابدأ التحليل',
+    rOv:'النتيجة',rH:'خطتك العلاجية جاهزة',rP:'منتجات مختارة من أكبر الصيدليات في السعودية',
+    nahdi:'صيدلية النهدي',nahdiE:'Al Nahdi Pharmacy',
+    united:'الصيدليات المتحدة',unitedE:'United Pharmacies',
+    dawaa:'صيدلية الدواء',dawaaE:'Al Dawaa Pharmacy',
+    vw:'فتح الصيدلية',insT:'خطوات الاستخدام',
+    re:'تحليل جديد',
+    fill:'الرجاء تعبئة جميع الحقول',
+    limM:'تم استنفاد المحاولات اليومية — يرجى المحاولة غداً',
+    errM:'حدث خطأ — يرجى المحاولة مرة أخرى',
+    ft:'DermaPlan · تحليل ذكي للعناية بالبشرة والشعر',
+    itm:'منتج'
+  },
+  en:{
+    sw:'العربية',
+    ov:'DermaPlan · Your Skin Advisor',
+    h1:'Get a personalized treatment plan for your skin or hair',
+    pp:'Describe your concern and our AI will analyze it and suggest suitable products from Saudi pharmacies',
+    lb1:'Select problem type',lb2:'Select skin or hair type',lb3:'Describe your concern',
+    skin:'Skin',hair:'Hair',
+    oily:'Oily',dry:'Dry',combo:'Combination',normal:'Normal',
+    hint:'Be specific — e.g. inflamed acne on cheeks with oily skin · severe dandruff and itching · hair thinning at the front',
+    go:'Start Analysis',
+    rOv:'Results',rH:'Your treatment plan is ready',rP:'Curated products from top Saudi pharmacies',
+    nahdi:'Al Nahdi Pharmacy',nahdiE:'صيدلية النهدي',
+    united:'United Pharmacies',unitedE:'الصيدليات المتحدة',
+    dawaa:'Al Dawaa Pharmacy',dawaaE:'صيدلية الدواء',
+    vw:'Open Pharmacy',insT:'How to Use',
+    re:'New Analysis',
+    fill:'Please fill in all fields',
+    limM:'Daily limit reached — please try again tomorrow',
+    errM:'Something went wrong — please try again',
+    ft:'DermaPlan · AI-powered skin & hair care analysis',
+    itm:'products'
+  }
+};
+const t=k=>T[lang][k]||k;
+
+function getU(){try{const d=JSON.parse(localStorage.getItem(STK)||'{}');const td=new Date().toISOString().slice(0,10);return d.d===td?d:{d:td,c:0}}catch{return{d:new Date().toISOString().slice(0,10),c:0}}}
+function incU(){const u=getU();u.c++;localStorage.setItem(STK,JSON.stringify(u))}
+function rem(){return Math.max(0,LIM-getU().c)}
+
+function ui(){
+  const d=lang==='ar'?'rtl':'ltr';
+  document.documentElement.lang=lang;document.documentElement.dir=d;document.body.dir=d;
+  document.getElementById('swBtn').textContent=t('sw');
+  document.getElementById('ov').textContent=t('ov');
+  document.getElementById('h1').textContent=t('h1');
+  document.getElementById('pp').textContent=t('pp');
+  document.getElementById('lb1').textContent=t('lb1');
+  document.getElementById('lb2').textContent=t('lb2');
+  document.getElementById('lb3').textContent=t('lb3');
+  document.getElementById('nSkin').textContent=t('skin');
+  document.getElementById('nHair').textContent=t('hair');
+  document.getElementById('bO').textContent=t('oily');
+  document.getElementById('bD').textContent=t('dry');
+  document.getElementById('bC').textContent=t('combo');
+  document.getElementById('bN').textContent=t('normal');
+  document.getElementById('cta').placeholder='...';
+  document.getElementById('hint').textContent=t('hint');
+  document.getElementById('sbTxt').textContent=t('go');
+  document.getElementById('ft').textContent=t('ft');
+}
+
+function launch(l){lang=l;document.getElementById('gate').classList.add('exit');document.getElementById('app').classList.add('live');ui()}
+function sw(){lang=lang==='ar'?'en':'ar';ui()}
+
+function pickT(el){document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');vT=el.dataset.v}
+function pickS(el){document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');vS=el.dataset.v}
+
+async function analyze(){
+  const txt=document.getElementById('cta').value.trim();
+  if(!vT||!vS||!txt){showM('er',t('fill'));return}
+  if(rem()<=0){showM('lm',t('limM'));return}
+  const btn=document.getElementById('subBtn');btn.classList.add('busy');btn.disabled=true;
+  document.getElementById('resBox').innerHTML='';
+
+  const ln=lang==='ar'?'Arabic':'English';
+  const sys=`You are a clinical dermatology/trichology advisor for Saudi Arabia.
+Recommend REAL products from Saudi pharmacies. ONLY valid JSON output.
+
+Rules:
+- Product names ALWAYS in English. Other text in ${ln}.
+- Simple issues: 1-2 categories. Complex: more categories as needed.
+- Each category: 1 product per pharmacy (nahdi, united, dawaa).
+- URLs: nahdi→https://www.nahdionline.com/en/catalogsearch/result/?q=ENCODED_NAME
+  united→https://www.unitedpharmacy.sa/en/catalogsearch/result/?q=ENCODED_NAME
+  dawaa→https://www.al-dawaa.com/catalogsearch/result/?q=ENCODED_NAME
+- Concise clinical usage instructions.
+
+JSON schema:
+{"categories":[{"category":"${ln}","products":[{"pharmacy":"nahdi|united|dawaa","name":"English","usage":"${ln}","url":"URL"}]}],"instructions":["..."]}`;
+
+  try{
+    const r=await fetch('/api/groq',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'system',content:sys},{role:'user',content:`Type:${vT}\nSubtype:${vS}\nComplaint:${txt}\nLang:${ln}`}]})
+    });
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();let raw=d.choices[0].message.content.trim();
+    if(raw.startsWith('```'))raw=raw.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'');
+    incU();render(JSON.parse(raw));
+  }catch(e){console.error(e);showM('er',t('errM'))}
+  finally{btn.classList.remove('busy');btn.disabled=false}
+}
+
+function render(data){
+  document.getElementById('formArea').style.display='none';
+  document.querySelector('.page-hdr').style.display='none';
+  const area=document.getElementById('resBox');
+
+  const phs=[
+    {k:'nahdi',n:t('nahdi'),e:t('nahdiE'),c:'nh'},
+    {k:'united',n:t('united'),e:t('unitedE'),c:'un'},
+    {k:'dawaa',n:t('dawaa'),e:t('dawaaE'),c:'dw'}
+  ];
+
+  const grp={nahdi:[],united:[],dawaa:[]};
+  (data.categories||[]).forEach(cat=>{
+    (cat.products||[]).forEach(p=>{if(grp[p.pharmacy])grp[p.pharmacy].push({...p,category:cat.category})});
+  });
+
+  let h=`<div class="results">
+    <div class="res-hdr">
+      <div class="overline">${t('rOv')}</div>
+      <h2>${t('rH')}</h2>
+      <p>${t('rP')}</p>
+    </div>`;
+
+  phs.forEach((ph,i)=>{
+    const items=grp[ph.k];
+    h+=`<div class="pharm-sec ${ph.c} ${i===0?'open':''}" id="sec_${ph.k}">
+      <div class="pharm-bar" onclick="togP('${ph.k}')">
+        <span class="pb-dot"></span>
+        <div class="pb-info"><div class="pb-name">${ph.n}</div><div class="pb-en">${ph.e}</div></div>
+        <span class="pb-count">${items.length} ${t('itm')}</span>
+        <div class="pb-arrow">▾</div>
+      </div>
+      <div class="pharm-body"><div class="pharm-inner">`;
+    items.forEach(p=>{
+      h+=`<div class="prod-card">
+        <div class="prod-top">
+          <span class="prod-cat">${esc(p.category)}</span>
+          <a class="prod-open" href="${esc(p.url)}" target="_blank" rel="noopener">${t('vw')} ↗</a>
+        </div>
+        <div class="prod-name">${esc(p.name)}</div>
+        <div class="prod-use">${esc(p.usage)}</div>
+      </div>`;
+    });
+    h+=`</div></div></div>`;
+  });
+
+  if(data.instructions?.length){
+    h+=`<div class="ins"><h4>${t('insT')}</h4><ol>`;
+    data.instructions.forEach(s=>{h+=`<li>${esc(s)}</li>`});
+    h+=`</ol></div>`;
+  }
+
+  h+=`<button class="again" onclick="rst()">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M3 10a7 7 0 0 1 7-7 7 7 0 0 1 6 3.5M17 10a7 7 0 0 1-7 7 7 7 0 0 1-6-3.5"/>
+      <path d="M16 3v4h-4M4 17v-4h4"/>
+    </svg>
+    ${t('re')}
+  </button></div>`;
+
+  area.innerHTML=h;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function togP(k){document.getElementById('sec_'+k).classList.toggle('open')}
+
+function rst(){
+  document.getElementById('resBox').innerHTML='';
+  document.getElementById('formArea').style.display='';
+  document.querySelector('.page-hdr').style.display='';
+  vT=null;vS=null;
+  document.querySelectorAll('.type-card,.sub-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('cta').value='';
+}
+
+function showM(c,m){document.getElementById('resBox').innerHTML=`<div class="msg ${c}">${esc(m)}</div>`}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+</script>
+
+</body>
+</html>

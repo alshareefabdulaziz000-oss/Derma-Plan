@@ -1,65 +1,33 @@
-const https = require(‘https’);
-
-module.exports = function handler(req, res) {
-res.setHeader(‘Access-Control-Allow-Origin’, ‘*’);
-res.setHeader(‘Access-Control-Allow-Methods’, ‘POST, OPTIONS’);
-res.setHeader(‘Access-Control-Allow-Headers’, ‘Content-Type’);
-
-if (req.method === ‘OPTIONS’) {
-return res.status(200).end();
-}
-
+module.exports = async (req, res) => {
 if (req.method !== ‘POST’) {
-return res.status(405).json({ error: ‘Method not allowed’ });
+return res.status(200).json({ status: ‘ok’, key_exists: !!process.env.GROQ_API_KEY });
 }
 
-var GROQ_KEY = process.env.GROQ_API_KEY;
-
-if (!GROQ_KEY) {
-return res.status(500).json({ error: ‘API key not configured’ });
+var key = process.env.GROQ_API_KEY;
+if (!key) {
+return res.status(500).json({ error: ‘no key’ });
 }
 
-var messages = req.body && req.body.messages;
-if (!messages) {
-return res.status(400).json({ error: ‘Missing messages’ });
-}
-
-var postData = JSON.stringify({
+try {
+var body = JSON.stringify({
 model: ‘llama-3.3-70b-versatile’,
-messages: messages,
+messages: req.body.messages,
 temperature: 0.3,
 max_tokens: 4000
 });
 
-var options = {
-hostname: ‘api.groq.com’,
-port: 443,
-path: ‘/openai/v1/chat/completions’,
-method: ‘POST’,
-headers: {
-‘Content-Type’: ‘application/json’,
-‘Authorization’: ’Bearer ’ + GROQ_KEY,
-‘Content-Length’: Buffer.byteLength(postData)
-}
-};
+```
+var r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+  body: body
+});
 
-var apiReq = https.request(options, function (apiRes) {
-var body = ‘’;
-apiRes.on(‘data’, function (chunk) { body += chunk; });
-apiRes.on(‘end’, function () {
-try {
-var data = JSON.parse(body);
-res.status(apiRes.statusCode).json(data);
+var data = await r.json();
+return res.status(200).json(data);
+```
+
 } catch (e) {
-res.status(500).json({ error: ‘Invalid response from API’ });
+return res.status(500).json({ error: e.message });
 }
-});
-});
-
-apiReq.on(‘error’, function (e) {
-res.status(500).json({ error: e.message });
-});
-
-apiReq.write(postData);
-apiReq.end();
 };

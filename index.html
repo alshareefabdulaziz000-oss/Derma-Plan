@@ -6,399 +6,304 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DermaPlan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
-:root{
-–cream:#FFFCF7;–cream2:#FFF8EE;–warm:#F5EDE3;
-–ink:#1A1A1A;–ink2:#3D3D3D;–ink3:#7A7A7A;–ink4:#ABABAB;–ink5:#D4D0CB;
-–forest:#1B6B4A;–forest2:#15573C;–forest-soft:rgba(27,107,74,.08);–forest-med:rgba(27,107,74,.15);
-–terra:#C4704B;–terra-soft:rgba(196,112,75,.08);
-–nahdi:#1B8C5A;–nahdi-bg:#F0FAF5;–nahdi-bd:#C8E6D8;
-–united:#2B5EA7;–united-bg:#F0F5FC;–united-bd:#C3D5ED;
-–dawaa:#A73B2B;–dawaa-bg:#FCF0EE;–dawaa-bd:#EDCBC3;
-}
-
 html{scroll-behavior:smooth}
 body{
-font-family:‘Cairo’,‘Plus Jakarta Sans’,sans-serif;
-background:var(–cream);color:var(–ink);min-height:100vh;overflow-x:hidden;
+  font-family:'Cairo','Plus Jakarta Sans',sans-serif;
+  background:#F7F5F2;color:#1A1A1A;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
-[dir=“ltr”] body{font-family:‘Plus Jakarta Sans’,‘Cairo’,sans-serif}
+[dir="ltr"] body{font-family:'Plus Jakarta Sans','Cairo',sans-serif}
+[dir="rtl"] *{letter-spacing:0 !important}
 
-/* Fix Arabic: kill letter-spacing in RTL — it breaks connected script */
-[dir=“rtl”] *{letter-spacing:0 !important}
-[dir=“rtl”] body{word-spacing:-.02em}
-/* Arabic headings: use Cairo 900 instead of Fraunces (Latin-only) */
-[dir=“rtl”] .lh-name,[dir=“rtl”] .page-hdr h1,[dir=“rtl”] .hdr-title,
-[dir=“rtl”] .res-hdr h2{font-family:‘Cairo’,sans-serif !important}
-
-/* =============================================
-LANGUAGE - SPLIT SCREEN
-============================================= */
-.lang-gate{
-position:fixed;inset:0;z-index:9000;display:flex;
-transition:opacity .6s ease .1s,visibility .6s;
-}
-.lang-gate.exit{opacity:0;visibility:hidden;pointer-events:none}
-
-.lang-half{
-flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-cursor:pointer;transition:all .5s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;
-}
-.lang-half::after{
-content:’’;position:absolute;inset:0;opacity:0;transition:opacity .4s;
-}
-.lang-half:hover::after{opacity:1}
-.lang-half:hover{flex:1.15}
-
-.lang-half.ar-side{background:var(–forest)}
-.lang-half.ar-side::after{background:rgba(0,0,0,.08)}
-.lang-half.en-side{background:var(–cream)}
-.lang-half.en-side::after{background:rgba(0,0,0,.03)}
-
-.lang-half .lh-content{position:relative;z-index:1;text-align:center;padding:20px}
-.lang-half .lh-label{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px;opacity:.6}
-.lang-half .lh-name{font-family:‘Fraunces’,serif;font-size:2.6rem;font-weight:900;margin-bottom:10px;letter-spacing:-.03em}
-.lang-half .lh-sub{font-size:.88rem;font-weight:400;opacity:.7;max-width:220px;margin:0 auto;line-height:1.6}
-.lang-half .lh-arrow{
-margin-top:28px;width:48px;height:48px;border-radius:50%;
+/* ========== LANGUAGE SCREEN ========== */
+.lang-screen{
+position:fixed;inset:0;z-index:9000;
+background:#F7F5F2;
 display:flex;align-items:center;justify-content:center;
-transition:transform .3s;font-size:1.2rem;
-margin-inline:auto;
+transition:opacity .5s ease, visibility .5s;
 }
-.lang-half:hover .lh-arrow{transform:scale(1.15)}
+.lang-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+.lang-inner{text-align:center;padding:24px;width:100%;max-width:360px}
 
-.ar-side .lh-label,.ar-side .lh-name,.ar-side .lh-sub{color:#fff}
-.ar-side .lh-arrow{background:rgba(255,255,255,.15);color:#fff}
-.en-side .lh-label,.en-side .lh-name,.en-side .lh-sub{color:var(–ink)}
-.en-side .lh-arrow{background:var(–forest-soft);color:var(–forest)}
-
-/* Decorative shapes */
-.lang-half .decor{position:absolute;opacity:.06;pointer-events:none}
-.ar-side .decor{width:300px;height:300px;border-radius:50%;border:40px solid #fff;bottom:-80px;right:-60px}
-.en-side .decor{width:250px;height:250px;border-radius:50%;border:35px solid var(–forest);top:-60px;left:-50px}
-
-@media(max-width:600px){
-.lang-gate{flex-direction:column}
-.lang-half .lh-name{font-size:2rem}
-.lang-half:hover{flex:1.08}
+.lang-logo{
+width:64px;height:64px;border-radius:18px;background:#1B6B4A;
+margin:0 auto 32px;display:flex;align-items:center;justify-content:center;
+box-shadow:0 8px 24px rgba(27,107,74,.2);
 }
+.lang-logo svg{width:28px;height:28px}
 
-/* =============================================
-APP SHELL
-============================================= */
+.lang-title{font-size:1.8rem;font-weight:800;color:#1A1A1A;margin-bottom:6px}
+.lang-sub{font-size:.88rem;color:#7A7A7A;margin-bottom:40px}
+
+.lang-btns{display:flex;flex-direction:column;gap:12px}
+.lang-btn{
+padding:18px;border-radius:14px;font-size:1.05rem;font-weight:700;
+cursor:pointer;font-family:‘Cairo’,sans-serif;transition:all .25s;border:none;
+}
+.lang-btn-ar{background:#1B6B4A;color:#fff}
+.lang-btn-ar:hover{background:#15573C;transform:translateY(-2px);box-shadow:0 8px 24px rgba(27,107,74,.25)}
+.lang-btn-en{background:#fff;color:#1A1A1A;border:2px solid #D4D0CB}
+.lang-btn-en:hover{border-color:#1B6B4A;color:#1B6B4A;transform:translateY(-2px)}
+
+/* ========== APP ========== */
 .app{
-max-width:580px;margin:0 auto;padding:0 20px 100px;
-opacity:0;transform:translateY(16px);
-transition:all .6s cubic-bezier(.22,1,.36,1) .4s;
+max-width:580px;margin:0 auto;padding:0 20px 80px;
+opacity:0;transform:translateY(16px);transition:all .5s ease .2s;
 }
-.app.live{opacity:1;transform:none}
+.app.show{opacity:1;transform:none}
 
-/* =============================================
-HEADER
-============================================= */
+/* ========== HEADER ========== */
 .hdr{
 display:flex;align-items:center;justify-content:space-between;
-padding:22px 0;position:sticky;top:0;z-index:100;
-background:var(–cream);
+padding:18px 0;position:sticky;top:0;z-index:100;background:#F7F5F2;
 }
 .hdr-left{display:flex;align-items:center;gap:10px}
-.hdr-mark{
-width:36px;height:36px;border-radius:10px;
-background:var(–forest);position:relative;overflow:hidden;
+.hdr-icon{
+width:34px;height:34px;border-radius:10px;background:#1B6B4A;
 display:flex;align-items:center;justify-content:center;
 }
-.hdr-mark::before{
-content:’’;position:absolute;width:18px;height:2px;background:#fff;border-radius:2px;
-}
-.hdr-mark::after{
-content:’’;position:absolute;width:2px;height:18px;background:#fff;border-radius:2px;
-}
-.hdr-title{font-family:‘Fraunces’,serif;font-weight:800;font-size:1.05rem;letter-spacing:-.02em}
-.hdr-lang{
-padding:7px 18px;border-radius:50px;border:1.5px solid var(–ink5);
-background:transparent;font-size:.76rem;font-weight:600;color:var(–ink3);
+.hdr-icon svg{width:16px;height:16px}
+.hdr-name{font-weight:800;font-size:1.05rem;color:#1A1A1A}
+.hdr-sw{
+padding:7px 18px;border-radius:50px;border:1.5px solid #D4D0CB;
+background:#fff;font-size:.78rem;font-weight:700;color:#7A7A7A;
 cursor:pointer;font-family:inherit;transition:all .2s;
 }
-.hdr-lang:hover{border-color:var(–forest);color:var(–forest)}
+.hdr-sw:hover{border-color:#1B6B4A;color:#1B6B4A}
 
-/* =============================================
-PAGE HEADER
-============================================= */
-.page-hdr{padding:36px 0 32px}
-.page-hdr .overline{
-font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-color:var(–forest);margin-bottom:14px;
+/* ========== PAGE TITLE ========== */
+.page-title{padding:28px 0 24px}
+.page-title .over{
+font-size:.7rem;font-weight:700;color:#1B6B4A;
+text-transform:uppercase;margin-bottom:12px;
 display:flex;align-items:center;gap:8px;
 }
-.page-hdr .overline::before{content:’’;width:20px;height:2px;background:var(–forest);border-radius:2px}
-.page-hdr h1{
-font-family:‘Fraunces’,‘Cairo’,serif;
-font-size:2rem;font-weight:900;line-height:1.25;letter-spacing:-.03em;
-margin-bottom:14px;
+[dir=“ltr”] .page-title .over{letter-spacing:.15em !important}
+.page-title .over::before{
+content:’’;width:20px;height:2.5px;background:#1B6B4A;border-radius:2px;
 }
-.page-hdr p{font-size:.92rem;color:var(–ink3);line-height:1.8;max-width:440px}
-
-/* =============================================
-FORM
-============================================= */
-.form-wrap{display:flex;flex-direction:column;gap:20px}
-
-.form-block{
-background:var(–white,#fff);border-radius:20px;padding:28px 24px;
-border:1px solid var(–ink5);
-transition:border-color .3s,box-shadow .3s;
+.page-title h1{
+font-size:1.6rem;font-weight:800;line-height:1.4;color:#1A1A1A;margin-bottom:10px;
 }
-.form-block:focus-within{border-color:var(–forest);box-shadow:0 0 0 4px var(–forest-soft)}
+.page-title p{font-size:.9rem;color:#7A7A7A;line-height:1.8}
+
+/* ========== FORM BLOCKS ========== */
+.fb{
+background:#FFFFFF;border-radius:18px;padding:24px 22px;margin-bottom:16px;
+border:1.5px solid #E8E4DF;
+transition:border-color .3s, box-shadow .3s;
+}
+.fb:focus-within{border-color:#1B6B4A;box-shadow:0 0 0 4px rgba(27,107,74,.08)}
 
 .fb-label{
-font-size:.72rem;font-weight:700;color:var(–ink3);letter-spacing:.12em;
+font-size:.75rem;font-weight:700;color:#7A7A7A;
 text-transform:uppercase;margin-bottom:16px;
 display:flex;align-items:center;gap:10px;
 }
+[dir=“ltr”] .fb-label{letter-spacing:.1em !important}
 .fb-num{
-width:24px;height:24px;border-radius:7px;background:var(–forest);color:#fff;
+width:24px;height:24px;border-radius:7px;background:#1B6B4A;color:#fff;
 display:inline-flex;align-items:center;justify-content:center;
-font-size:.68rem;font-weight:700;letter-spacing:0;
+font-size:.7rem;font-weight:800;
 }
 
-/* TYPE SELECTOR - Big visual cards */
-.type-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* Type cards */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .type-card{
-border:2px solid var(–ink5);border-radius:16px;padding:24px 16px;
-text-align:center;cursor:pointer;transition:all .3s;background:#fff;
-position:relative;overflow:hidden;
+border:2px solid #E8E4DF;border-radius:14px;padding:20px 14px;
+text-align:center;cursor:pointer;transition:all .25s;background:#fff;
 }
-.type-card::before{
-content:’’;position:absolute;inset:0;
-background:var(–forest-soft);opacity:0;transition:opacity .3s;
+.type-card:hover{border-color:#ABABAB}
+.type-card.on{border-color:#1B6B4A;background:rgba(27,107,74,.06)}
+.type-card .tc-ico{
+width:48px;height:48px;border-radius:14px;margin:0 auto 12px;
+display:flex;align-items:center;justify-content:center;font-size:1.6rem;
 }
-.type-card:hover{border-color:var(–ink4)}
-.type-card.sel{border-color:var(–forest);background:var(–forest-soft)}
-.type-card.sel::before{opacity:1}
-.tc-visual{
-width:56px;height:56px;border-radius:16px;margin:0 auto 14px;
-display:flex;align-items:center;justify-content:center;
-position:relative;z-index:1;
-}
-.type-card[data-v=“skin”] .tc-visual{background:linear-gradient(135deg,#FDDCB5,#FBC9A8)}
-.type-card[data-v=“hair”] .tc-visual{background:linear-gradient(135deg,#C8E6C9,#A5D6A7)}
-.tc-visual svg{width:28px;height:28px}
-.tc-name{font-weight:700;font-size:.95rem;position:relative;z-index:1}
-.type-card.sel .tc-name{color:var(–forest)}
+.type-card[data-v=“skin”] .tc-ico{background:#FDDCB5}
+.type-card[data-v=“hair”] .tc-ico{background:#C8E6C9}
+.type-card .tc-txt{font-weight:700;font-size:.95rem;color:#1A1A1A}
+.type-card.on .tc-txt{color:#1B6B4A}
 
-/* SUBTYPE */
-.sub-btns{display:flex;gap:10px;flex-wrap:wrap}
+/* Sub buttons */
+.sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sub-btn{
-flex:1;min-width:0;padding:14px 12px;border:2px solid var(–ink5);border-radius:12px;
-background:#fff;font-size:.85rem;font-weight:600;color:var(–ink2);
+padding:14px 10px;border:2px solid #E8E4DF;border-radius:12px;
+background:#fff;font-size:.88rem;font-weight:700;color:#3D3D3D;
 cursor:pointer;font-family:inherit;transition:all .25s;text-align:center;
 }
-.sub-btn:hover{border-color:var(–ink4)}
-.sub-btn.sel{border-color:var(–forest);color:var(–forest);background:var(–forest-soft)}
+.sub-btn:hover{border-color:#ABABAB}
+.sub-btn.on{border-color:#1B6B4A;color:#1B6B4A;background:rgba(27,107,74,.06)}
 
-/* TEXTAREA */
-.concern-ta{
-width:100%;min-height:110px;padding:18px;border:2px solid var(–ink5);
-border-radius:14px;background:var(–cream2);font-size:.92rem;font-family:inherit;
-color:var(–ink);resize:vertical;transition:border-color .25s;line-height:1.9;
+/* Textarea */
+.ta{
+width:100%;min-height:110px;padding:16px;border:2px solid #E8E4DF;
+border-radius:14px;background:#FBF9F7;font-size:.95rem;font-family:inherit;
+color:#1A1A1A;resize:vertical;transition:border-color .25s;line-height:1.9;
 }
-.concern-ta:focus{outline:none;border-color:var(–forest)}
-.concern-ta::placeholder{color:var(–ink4)}
-.ta-hint{font-size:.74rem;color:var(–ink4);margin-top:10px;line-height:1.6}
+.ta:focus{outline:none;border-color:#1B6B4A}
+.ta::placeholder{color:#ABABAB}
+.ta-hint{font-size:.76rem;color:#ABABAB;margin-top:10px;line-height:1.7}
 
-/* SUBMIT */
-.submit-btn{
-width:100%;padding:20px;border:none;border-radius:16px;
-background:var(–forest);color:#fff;font-size:1.05rem;font-weight:700;
-cursor:pointer;font-family:inherit;transition:all .3s;
-display:flex;align-items:center;justify-content:center;gap:10px;
-margin-top:4px;
+/* Submit */
+.go-btn{
+width:100%;padding:18px;border:none;border-radius:14px;
+background:#1B6B4A;color:#fff;font-size:1.05rem;font-weight:700;
+cursor:pointer;font-family:inherit;transition:all .25s;
+display:flex;align-items:center;justify-content:center;gap:8px;
+margin-top:8px;
 }
-.submit-btn:hover:not(:disabled){
-background:var(–forest2);transform:translateY(-2px);
-box-shadow:0 12px 32px rgba(27,107,74,.2);
-}
-.submit-btn:disabled{opacity:.35;cursor:not-allowed}
-.submit-btn .sb-ico{font-size:1.1rem}
-.submit-btn .sb-spin{display:none;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);
-border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
-.submit-btn.busy .sb-text,.submit-btn.busy .sb-ico{display:none}
-.submit-btn.busy .sb-spin{display:block}
-@keyframes sp{to{transform:rotate(360deg)}}
+.go-btn:hover:not(:disabled){background:#15573C;transform:translateY(-2px);box-shadow:0 8px 24px rgba(27,107,74,.2)}
+.go-btn:disabled{opacity:.35;cursor:not-allowed}
+.go-btn .go-spin{display:none;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);
+border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.go-btn.busy .go-txt{display:none}
+.go-btn.busy .go-spin{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* =============================================
-RESULTS
-============================================= */
-.results{margin-top:36px;animation:slideUp .5s ease both}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+/* ========== RESULTS ========== */
+.results{margin-top:32px;animation:up .5s ease both}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 
-.res-hdr{margin-bottom:28px}
-.res-hdr .overline{
-font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-color:var(–terra);margin-bottom:10px;
+.res-hdr{margin-bottom:24px}
+.res-hdr .over{
+font-size:.7rem;font-weight:700;color:#C4704B;
+text-transform:uppercase;margin-bottom:10px;
 display:flex;align-items:center;gap:8px;
 }
-.res-hdr .overline::before{content:’’;width:20px;height:2px;background:var(–terra);border-radius:2px}
-.res-hdr h2{font-family:‘Fraunces’,‘Cairo’,serif;font-size:1.6rem;font-weight:900;letter-spacing:-.03em;margin-bottom:6px}
-.res-hdr p{font-size:.85rem;color:var(–ink3)}
+[dir=“ltr”] .res-hdr .over{letter-spacing:.15em !important}
+.res-hdr .over::before{content:’’;width:20px;height:2.5px;background:#C4704B;border-radius:2px}
+.res-hdr h2{font-size:1.4rem;font-weight:800;color:#1A1A1A;margin-bottom:6px}
+.res-hdr p{font-size:.85rem;color:#7A7A7A}
 
-/* PHARMACY SECTION */
-.pharm-sec{margin-bottom:20px}
-.pharm-bar{
-display:flex;align-items:center;gap:12px;padding:16px 20px;
-background:#fff;border:1.5px solid var(–ink5);border-radius:16px;
-cursor:pointer;transition:all .25s;
+/* Pharmacy */
+.ph{margin-bottom:14px;border-radius:16px;overflow:hidden;border:1.5px solid #E8E4DF;background:#fff}
+.ph-bar{
+padding:16px 20px;display:flex;align-items:center;gap:12px;
+cursor:pointer;transition:background .2s;
 }
-.pharm-bar:hover{box-shadow:0 4px 16px rgba(0,0,0,.05)}
-.pharm-sec.open .pharm-bar{border-radius:16px 16px 0 0;border-bottom-color:transparent}
-
-.pb-dot{width:14px;height:14px;border-radius:5px;flex-shrink:0}
-.pharm-sec.nh .pb-dot{background:var(–nahdi)}
-.pharm-sec.un .pb-dot{background:var(–united)}
-.pharm-sec.dw .pb-dot{background:var(–dawaa)}
-.pb-info{flex:1}
-.pb-name{font-weight:700;font-size:.92rem}
-.pb-en{font-size:.72rem;color:var(–ink4);margin-top:1px}
-.pb-count{
-font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:8px;
+.ph-bar:hover{background:#FBF9F7}
+.ph-dot{width:12px;height:12px;border-radius:5px;flex-shrink:0}
+.ph.nh .ph-dot{background:#1B8C5A}
+.ph.un .ph-dot{background:#2B5EA7}
+.ph.dw .ph-dot{background:#A73B2B}
+.ph-info{flex:1}
+.ph-name{font-weight:700;font-size:.92rem;color:#1A1A1A}
+.ph-en{font-size:.72rem;color:#ABABAB;margin-top:1px}
+.ph-cnt{
+font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:8px;flex-shrink:0;
 }
-.pharm-sec.nh .pb-count{background:var(–nahdi-bg);color:var(–nahdi)}
-.pharm-sec.un .pb-count{background:var(–united-bg);color:var(–united)}
-.pharm-sec.dw .pb-count{background:var(–dawaa-bg);color:var(–dawaa)}
-.pb-arrow{
-width:28px;height:28px;border-radius:8px;background:var(–warm);
+.ph.nh .ph-cnt{background:#EDFFF5;color:#1B8C5A}
+.ph.un .ph-cnt{background:#EBF4FF;color:#2B5EA7}
+.ph.dw .ph-cnt{background:#FFF0EE;color:#A73B2B}
+.ph-arr{
+width:26px;height:26px;border-radius:8px;background:#F7F5F2;
 display:flex;align-items:center;justify-content:center;
-transition:transform .3s;font-size:.65rem;color:var(–ink3);
+font-size:.6rem;color:#7A7A7A;transition:transform .3s;flex-shrink:0;
 }
-.pharm-sec.open .pb-arrow{transform:rotate(180deg)}
+.ph.open .ph-arr{transform:rotate(180deg)}
+.ph-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.22,1,.36,1)}
+.ph.open .ph-body{max-height:5000px}
+.ph-inner{padding:6px 14px 14px}
 
-.pharm-body{
-max-height:0;overflow:hidden;
-transition:max-height .5s cubic-bezier(.22,1,.36,1);
-border:1.5px solid var(–ink5);border-top:none;border-radius:0 0 16px 16px;
-background:var(–cream2);
+/* Product */
+.pr{
+background:#FBF9F7;border-radius:14px;padding:16px 18px;margin-bottom:10px;
+border:1px solid #E8E4DF;transition:all .2s;
 }
-.pharm-sec.open .pharm-body{max-height:4000px}
-.pharm-inner{padding:12px 14px}
-
-/* PRODUCT CARD */
-.prod-card{
-background:#fff;border-radius:14px;padding:18px 20px;margin-bottom:10px;
-border:1px solid var(–ink5);transition:all .25s;
+.pr:last-child{margin-bottom:0}
+.pr:hover{box-shadow:0 4px 14px rgba(0,0,0,.05);transform:translateY(-1px)}
+.pr-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.pr-cat{
+font-size:.62rem;font-weight:700;text-transform:uppercase;
+padding:4px 10px;border-radius:6px;
 }
-.prod-card:last-child{margin-bottom:0}
-.prod-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-2px)}
-
-.prod-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.prod-cat{
-font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-padding:4px 12px;border-radius:6px;
+.ph.nh .pr-cat{background:#EDFFF5;color:#1B8C5A;border:1px solid #C8E6D8}
+.ph.un .pr-cat{background:#EBF4FF;color:#2B5EA7;border:1px solid #C3D5ED}
+.ph.dw .pr-cat{background:#FFF0EE;color:#A73B2B;border:1px solid #EDCBC3}
+.pr-link{
+padding:6px 14px;border-radius:8px;border:1.5px solid rgba(27,107,74,.2);
+background:rgba(27,107,74,.06);font-size:.74rem;font-weight:700;color:#1B6B4A;
+text-decoration:none;transition:all .2s;flex-shrink:0;
 }
-.pharm-sec.nh .prod-cat{background:var(–nahdi-bg);color:var(–nahdi);border:1px solid var(–nahdi-bd)}
-.pharm-sec.un .prod-cat{background:var(–united-bg);color:var(–united);border:1px solid var(–united-bd)}
-.pharm-sec.dw .prod-cat{background:var(–dawaa-bg);color:var(–dawaa);border:1px solid var(–dawaa-bd)}
-.prod-open{
-padding:7px 16px;border-radius:8px;border:1.5px solid var(–forest-med);
-background:var(–forest-soft);font-size:.74rem;font-weight:700;color:var(–forest);
-text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:4px;
-flex-shrink:0;
-}
-.prod-open:hover{background:var(–forest);color:#fff;border-color:var(–forest)}
+.pr-link:hover{background:#1B6B4A;color:#fff;border-color:#1B6B4A}
+.pr-name{font-weight:700;font-size:.95rem;color:#1A1A1A;margin-bottom:4px;direction:ltr;unicode-bidi:plaintext}
+[dir=“rtl”] .pr-name{text-align:right}
+.pr-use{font-size:.82rem;color:#7A7A7A;line-height:1.8}
 
-.prod-name{font-weight:700;font-size:.95rem;color:var(–ink);margin-bottom:5px;
-direction:ltr;unicode-bidi:plaintext}
-[dir=“rtl”] .prod-name{text-align:right}
-.prod-use{font-size:.82rem;color:var(–ink3);line-height:1.8}
-
-/* INSTRUCTIONS */
+/* Instructions */
 .ins{
-background:#fff;border-radius:16px;padding:24px;margin-top:20px;
-border:1px solid var(–ink5);
+background:#fff;border-radius:16px;padding:22px;margin-top:18px;border:1.5px solid #E8E4DF;
 }
-.ins h4{font-weight:700;font-size:.95rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ins h4{font-weight:700;font-size:.95rem;color:#1A1A1A;margin-bottom:12px}
 .ins ol{padding-inline-start:18px}
-.ins li{font-size:.85rem;color:var(–ink2);line-height:2.1}
-.ins li::marker{color:var(–forest);font-weight:700}
+.ins li{font-size:.85rem;color:#3D3D3D;line-height:2.1}
 
-/* RESET */
-.again{
+/* Again */
+.again-btn{
 display:flex;align-items:center;justify-content:center;gap:8px;
-margin:24px auto 0;padding:14px 32px;border-radius:50px;
-border:2px solid var(–ink5);background:#fff;
-font-size:.88rem;font-weight:600;color:var(–ink2);cursor:pointer;
-font-family:inherit;transition:all .25s;
+margin:24px auto 0;padding:14px 28px;border-radius:50px;
+border:2px solid #D4D0CB;background:#fff;
+font-size:.88rem;font-weight:700;color:#7A7A7A;cursor:pointer;
+font-family:inherit;transition:all .2s;
 }
-.again:hover{border-color:var(–forest);color:var(–forest)}
-.again svg{width:16px;height:16px}
+.again-btn:hover{border-color:#1B6B4A;color:#1B6B4A}
 
-/* MESSAGES */
-.msg{text-align:center;padding:24px;border-radius:14px;margin-top:20px;font-size:.88rem;font-weight:600}
-.msg.er{background:#FFF0EE;color:var(–dawaa);border:1px solid var(–dawaa-bd)}
-.msg.lm{background:#FFF8EE;color:var(–terra);border:1px solid #F0D8C0}
+/* Messages */
+.msg{text-align:center;padding:20px;border-radius:14px;margin-top:16px;font-size:.88rem;font-weight:600}
+.msg-err{background:#FFF0EE;color:#A73B2B;border:1px solid #EDCBC3}
+.msg-lim{background:#FFF8EE;color:#C4704B;border:1px solid #F0D8C0}
 
-.foot{text-align:center;margin-top:56px;padding-top:24px;border-top:1px solid var(–ink5);
-font-size:.72rem;color:var(–ink4)}
+.foot{text-align:center;margin-top:48px;font-size:.72rem;color:#ABABAB}
 
-/* =============================================
-RESPONSIVE
-============================================= */
-@media(max-width:520px){
-.page-hdr h1{font-size:1.55rem}
-.form-block{padding:22px 18px}
-.prod-top{flex-wrap:wrap}
-.prod-open{width:100%;justify-content:center;margin-top:6px}
-.sub-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sub-btn{min-width:0}
+@media(max-width:400px){
+.type-grid,.sub-grid{grid-template-columns:1fr 1fr}
+.pr-link{width:100%;text-align:center;margin-top:6px}
+.page-title h1{font-size:1.35rem}
 }
 </style>
 
 </head>
 <body dir="rtl">
 
-<!-- ============ LANGUAGE GATE ============ -->
+<!-- ========== LANGUAGE ========== -->
 
-<div class="lang-gate" id="gate">
-  <div class="lang-half ar-side" onclick="launch('ar')">
-    <div class="decor"></div>
-    <div class="lh-content">
-      <div class="lh-label">اختر لغتك</div>
-      <div class="lh-name">العربية</div>
-      <div class="lh-sub">تحليل ذكي لمشاكل البشرة والشعر</div>
-      <div class="lh-arrow">→</div>
+<div class="lang-screen" id="ls">
+  <div class="lang-inner">
+    <div class="lang-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
+        <line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/>
+      </svg>
     </div>
-  </div>
-  <div class="lang-half en-side" onclick="launch('en')">
-    <div class="decor"></div>
-    <div class="lh-content">
-      <div class="lh-label">Choose language</div>
-      <div class="lh-name">English</div>
-      <div class="lh-sub">Smart analysis for skin & hair concerns</div>
-      <div class="lh-arrow">→</div>
+    <div class="lang-title">DermaPlan</div>
+    <div class="lang-sub">مستشارك الجلدي الذكي · Your Skin Advisor</div>
+    <div class="lang-btns">
+      <button class="lang-btn lang-btn-ar" onclick="go('ar')">العربية</button>
+      <button class="lang-btn lang-btn-en" onclick="go('en')">English</button>
     </div>
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+<!-- ========== APP ========== -->
 
 <div class="app" id="app">
 
-  <!-- HEADER -->
-
   <div class="hdr">
     <div class="hdr-left">
-      <div class="hdr-mark"></div>
-      <span class="hdr-title">DermaPlan</span>
+      <div class="hdr-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/>
+        </svg>
+      </div>
+      <span class="hdr-name">DermaPlan</span>
     </div>
-    <button class="hdr-lang" id="swBtn" onclick="sw()"></button>
+    <button class="hdr-sw" id="sw" onclick="flip()"></button>
   </div>
 
-  <!-- PAGE HEADER -->
-
-  <div class="page-hdr">
-    <div class="overline" id="ov"></div>
+  <div class="page-title" id="pgTitle">
+    <div class="over" id="ov"></div>
     <h1 id="h1"></h1>
     <p id="pp"></p>
   </div>
@@ -406,88 +311,76 @@ RESPONSIVE
   <!-- FORM -->
 
   <div id="formArea">
-    <div class="form-wrap">
 
 ```
-  <!-- 1 TYPE -->
-  <div class="form-block">
-    <div class="fb-label"><span class="fb-num">1</span><span id="lb1"></span></div>
-    <div class="type-cards">
-      <div class="type-card" data-v="skin" onclick="pickT(this)">
-        <div class="tc-visual">
-          <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="#C4704B" stroke-width="2"/><path d="M16 10v4m0 4h.01" stroke="#C4704B" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <div class="tc-name" id="nSkin"></div>
-      </div>
-      <div class="type-card" data-v="hair" onclick="pickT(this)">
-        <div class="tc-visual">
-          <svg viewBox="0 0 32 32" fill="none"><path d="M10 22c0-6 3-12 6-12s6 6 6 12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><path d="M13 16c1-2 2-3 3-3s2 1 3 3" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
-        <div class="tc-name" id="nHair"></div>
-      </div>
+<!-- 1 TYPE -->
+<div class="fb">
+  <div class="fb-label"><span class="fb-num">1</span><span id="l1"></span></div>
+  <div class="type-grid">
+    <div class="type-card" data-v="skin" onclick="pickT(this)">
+      <div class="tc-ico">🧴</div>
+      <div class="tc-txt" id="tSkin"></div>
+    </div>
+    <div class="type-card" data-v="hair" onclick="pickT(this)">
+      <div class="tc-ico">💇</div>
+      <div class="tc-txt" id="tHair"></div>
     </div>
   </div>
-
-  <!-- 2 SUBTYPE -->
-  <div class="form-block">
-    <div class="fb-label"><span class="fb-num">2</span><span id="lb2"></span></div>
-    <div class="sub-btns">
-      <button class="sub-btn" data-v="oily" onclick="pickS(this)" id="bO"></button>
-      <button class="sub-btn" data-v="dry" onclick="pickS(this)" id="bD"></button>
-      <button class="sub-btn" data-v="combination" onclick="pickS(this)" id="bC"></button>
-      <button class="sub-btn" data-v="normal" onclick="pickS(this)" id="bN"></button>
-    </div>
-  </div>
-
-  <!-- 3 CONCERN -->
-  <div class="form-block">
-    <div class="fb-label"><span class="fb-num">3</span><span id="lb3"></span></div>
-    <textarea class="concern-ta" id="cta" rows="3"></textarea>
-    <div class="ta-hint" id="hint"></div>
-  </div>
-
-  <!-- SUBMIT -->
-  <button class="submit-btn" id="subBtn" onclick="analyze()">
-    <span class="sb-ico" id="sbIco">↗</span>
-    <span class="sb-text" id="sbTxt"></span>
-    <div class="sb-spin"></div>
-  </button>
-
 </div>
+
+<!-- 2 SUBTYPE -->
+<div class="fb">
+  <div class="fb-label"><span class="fb-num">2</span><span id="l2"></span></div>
+  <div class="sub-grid">
+    <button class="sub-btn" data-v="oily" onclick="pickS(this)" id="sO"></button>
+    <button class="sub-btn" data-v="dry" onclick="pickS(this)" id="sD"></button>
+    <button class="sub-btn" data-v="combination" onclick="pickS(this)" id="sC"></button>
+    <button class="sub-btn" data-v="normal" onclick="pickS(this)" id="sN"></button>
+  </div>
+</div>
+
+<!-- 3 DESCRIBE -->
+<div class="fb">
+  <div class="fb-label"><span class="fb-num">3</span><span id="l3"></span></div>
+  <textarea class="ta" id="ta" rows="3"></textarea>
+  <div class="ta-hint" id="hint"></div>
+</div>
+
+<!-- SUBMIT -->
+<button class="go-btn" id="goBtn" onclick="run()">
+  <span class="go-txt" id="goTxt"></span>
+  <div class="go-spin"></div>
+</button>
 ```
 
   </div>
 
-  <!-- RESULTS -->
-
-  <div id="resBox"></div>
-
+  <div id="out"></div>
   <div class="foot" id="ft"></div>
 </div>
 
 <script>
-const LIM=50,STK='dp4';
-let lang='ar',vT=null,vS=null;
+var LIM=50,STK='dp5',lang='ar',vT=null,vS=null;
 
-const T={
+var I={
   ar:{
     sw:'English',
     ov:'DermaPlan · مستشارك الجلدي',
     h1:'احصل على خطة علاجية مخصصة لبشرتك أو شعرك',
-    pp:'وصّف مشكلتك وسيقوم الذكاء الاصطناعي بتحليلها واقتراح المنتجات المناسبة من الصيدليات السعودية',
-    lb1:'حدد نوع المشكلة',lb2:'حدد نوع البشرة أو الشعر',lb3:'اكتب وصف مشكلتك',
+    pp:'وصّف مشكلتك وسنقترح لك المنتجات المناسبة من الصيدليات السعودية',
+    l1:'نوع المشكلة',l2:'نوع البشرة أو الشعر',l3:'وصف المشكلة',
     skin:'بشرة',hair:'شعر',
     oily:'دهني',dry:'جاف',combo:'مختلط',normal:'عادي',
-    hint:'كن دقيقاً في الوصف — مثال: حبوب ملتهبة في الخدين مع بشرة دهنية · قشرة وحكة شديدة · تساقط من مقدمة الرأس',
-    go:'ابدأ التحليل',
-    rOv:'النتيجة',rH:'خطتك العلاجية جاهزة',rP:'منتجات مختارة من أكبر الصيدليات في السعودية',
-    nahdi:'صيدلية النهدي',nahdiE:'Al Nahdi Pharmacy',
-    united:'الصيدليات المتحدة',unitedE:'United Pharmacies',
-    dawaa:'صيدلية الدواء',dawaaE:'Al Dawaa Pharmacy',
-    vw:'فتح الصيدلية',insT:'خطوات الاستخدام',
+    hint:'مثال: حبوب ملتهبة في الخدين · قشرة وحكة شديدة · تساقط الشعر · جفاف واحمرار',
+    goTxt:'ابدأ التحليل',
+    rOv:'النتيجة',rH:'خطتك العلاجية جاهزة',rP:'منتجات حقيقية من الصيدليات السعودية',
+    nahdi:'صيدلية النهدي',nahdiE:'Al Nahdi',
+    united:'الصيدليات المتحدة',unitedE:'United',
+    dawaa:'صيدلية الدواء',dawaaE:'Al Dawaa',
+    vw:'فتح',insT:'خطوات الاستخدام',
     re:'تحليل جديد',
-    fill:'الرجاء تعبئة جميع الحقول',
-    limM:'تم استنفاد المحاولات اليومية — يرجى المحاولة غداً',
+    fill:'يرجى تعبئة جميع الحقول',
+    limM:'تم استنفاد المحاولات اليومية — حاول غداً',
     errM:'حدث خطأ — يرجى المحاولة مرة أخرى',
     ft:'DermaPlan · تحليل ذكي للعناية بالبشرة والشعر',
     itm:'منتج'
@@ -496,172 +389,201 @@ const T={
     sw:'العربية',
     ov:'DermaPlan · Your Skin Advisor',
     h1:'Get a personalized treatment plan for your skin or hair',
-    pp:'Describe your concern and our AI will analyze it and suggest suitable products from Saudi pharmacies',
-    lb1:'Select problem type',lb2:'Select skin or hair type',lb3:'Describe your concern',
+    pp:'Describe your concern and we\'ll suggest suitable products from Saudi pharmacies',
+    l1:'Problem Type',l2:'Skin or Hair Type',l3:'Describe Your Concern',
     skin:'Skin',hair:'Hair',
     oily:'Oily',dry:'Dry',combo:'Combination',normal:'Normal',
-    hint:'Be specific — e.g. inflamed acne on cheeks with oily skin · severe dandruff and itching · hair thinning at the front',
-    go:'Start Analysis',
-    rOv:'Results',rH:'Your treatment plan is ready',rP:'Curated products from top Saudi pharmacies',
-    nahdi:'Al Nahdi Pharmacy',nahdiE:'صيدلية النهدي',
-    united:'United Pharmacies',unitedE:'الصيدليات المتحدة',
-    dawaa:'Al Dawaa Pharmacy',dawaaE:'صيدلية الدواء',
-    vw:'Open Pharmacy',insT:'How to Use',
+    hint:'e.g. Inflamed acne on cheeks · Severe dandruff · Hair thinning · Dry skin with redness',
+    goTxt:'Start Analysis',
+    rOv:'Results',rH:'Your treatment plan is ready',rP:'Real products from Saudi pharmacies',
+    nahdi:'Al Nahdi',nahdiE:'صيدلية النهدي',
+    united:'United Pharmacies',unitedE:'المتحدة',
+    dawaa:'Al Dawaa',dawaaE:'الدواء',
+    vw:'Open',insT:'How to Use',
     re:'New Analysis',
     fill:'Please fill in all fields',
-    limM:'Daily limit reached — please try again tomorrow',
+    limM:'Daily limit reached — try again tomorrow',
     errM:'Something went wrong — please try again',
-    ft:'DermaPlan · AI-powered skin & hair care analysis',
+    ft:'DermaPlan · AI-powered skin & hair analysis',
     itm:'products'
   }
 };
-const t=k=>T[lang][k]||k;
+function t(k){return I[lang][k]||k}
 
-function getU(){try{const d=JSON.parse(localStorage.getItem(STK)||'{}');const td=new Date().toISOString().slice(0,10);return d.d===td?d:{d:td,c:0}}catch{return{d:new Date().toISOString().slice(0,10),c:0}}}
-function incU(){const u=getU();u.c++;localStorage.setItem(STK,JSON.stringify(u))}
+function getU(){try{var d=JSON.parse(localStorage.getItem(STK)||'{}');var td=new Date().toISOString().slice(0,10);return d.d===td?d:{d:td,c:0}}catch(e){return{d:new Date().toISOString().slice(0,10),c:0}}}
+function incU(){var u=getU();u.c++;localStorage.setItem(STK,JSON.stringify(u))}
 function rem(){return Math.max(0,LIM-getU().c)}
 
 function ui(){
-  const d=lang==='ar'?'rtl':'ltr';
-  document.documentElement.lang=lang;document.documentElement.dir=d;document.body.dir=d;
-  document.getElementById('swBtn').textContent=t('sw');
+  var d=lang==='ar'?'rtl':'ltr';
+  document.documentElement.lang=lang;
+  document.documentElement.dir=d;
+  document.body.dir=d;
+  document.getElementById('sw').textContent=t('sw');
   document.getElementById('ov').textContent=t('ov');
   document.getElementById('h1').textContent=t('h1');
   document.getElementById('pp').textContent=t('pp');
-  document.getElementById('lb1').textContent=t('lb1');
-  document.getElementById('lb2').textContent=t('lb2');
-  document.getElementById('lb3').textContent=t('lb3');
-  document.getElementById('nSkin').textContent=t('skin');
-  document.getElementById('nHair').textContent=t('hair');
-  document.getElementById('bO').textContent=t('oily');
-  document.getElementById('bD').textContent=t('dry');
-  document.getElementById('bC').textContent=t('combo');
-  document.getElementById('bN').textContent=t('normal');
-  document.getElementById('cta').placeholder='...';
+  document.getElementById('l1').textContent=t('l1');
+  document.getElementById('l2').textContent=t('l2');
+  document.getElementById('l3').textContent=t('l3');
+  document.getElementById('tSkin').textContent=t('skin');
+  document.getElementById('tHair').textContent=t('hair');
+  document.getElementById('sO').textContent=t('oily');
+  document.getElementById('sD').textContent=t('dry');
+  document.getElementById('sC').textContent=t('combo');
+  document.getElementById('sN').textContent=t('normal');
+  document.getElementById('ta').placeholder='...';
   document.getElementById('hint').textContent=t('hint');
-  document.getElementById('sbTxt').textContent=t('go');
+  document.getElementById('goTxt').textContent=t('goTxt');
   document.getElementById('ft').textContent=t('ft');
 }
 
-function launch(l){lang=l;document.getElementById('gate').classList.add('exit');document.getElementById('app').classList.add('live');ui()}
-function sw(){lang=lang==='ar'?'en':'ar';ui()}
+function go(l){
+  lang=l;
+  document.getElementById('ls').classList.add('hide');
+  document.getElementById('app').classList.add('show');
+  ui();
+}
+function flip(){lang=lang==='ar'?'en':'ar';ui()}
 
-function pickT(el){document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');vT=el.dataset.v}
-function pickS(el){document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');vS=el.dataset.v}
+function pickT(el){
+  var all=document.querySelectorAll('.type-card');
+  for(var i=0;i<all.length;i++) all[i].classList.remove('on');
+  el.classList.add('on');
+  vT=el.getAttribute('data-v');
+}
+function pickS(el){
+  var all=document.querySelectorAll('.sub-btn');
+  for(var i=0;i<all.length;i++) all[i].classList.remove('on');
+  el.classList.add('on');
+  vS=el.getAttribute('data-v');
+}
 
-async function analyze(){
-  const txt=document.getElementById('cta').value.trim();
-  if(!vT||!vS||!txt){showM('er',t('fill'));return}
-  if(rem()<=0){showM('lm',t('limM'));return}
-  const btn=document.getElementById('subBtn');btn.classList.add('busy');btn.disabled=true;
-  document.getElementById('resBox').innerHTML='';
+function run(){
+  var txt=document.getElementById('ta').value.trim();
+  if(!vT||!vS||!txt){showMsg('err',t('fill'));return}
+  if(rem()<=0){showMsg('lim',t('limM'));return}
 
-  const ln=lang==='ar'?'Arabic':'English';
-  const sys=`You are a clinical dermatology/trichology advisor for Saudi Arabia.
-Recommend REAL products from Saudi pharmacies. ONLY valid JSON output.
+  var btn=document.getElementById('goBtn');
+  btn.classList.add('busy');btn.disabled=true;
+  document.getElementById('out').innerHTML='';
 
-Rules:
-- Product names ALWAYS in English. Other text in ${ln}.
-- Simple issues: 1-2 categories. Complex: more categories as needed.
-- Each category: 1 product per pharmacy (nahdi, united, dawaa).
-- URLs: nahdi→https://www.nahdionline.com/en/catalogsearch/result/?q=ENCODED_NAME
-  united→https://www.unitedpharmacy.sa/en/catalogsearch/result/?q=ENCODED_NAME
-  dawaa→https://www.al-dawaa.com/catalogsearch/result/?q=ENCODED_NAME
-- Concise clinical usage instructions.
+  var ln=lang==='ar'?'Arabic':'English';
 
-JSON schema:
-{"categories":[{"category":"${ln}","products":[{"pharmacy":"nahdi|united|dawaa","name":"English","usage":"${ln}","url":"URL"}]}],"instructions":["..."]}`;
+  var sys='You are a clinical dermatology/trichology advisor for Saudi Arabia. Recommend REAL products from Saudi pharmacies. ONLY valid JSON output, no markdown fences.\n\nRules:\n- Product names ALWAYS in English. Other text in '+ln+'.\n- Simple issues: 1-2 categories. Complex: more as needed.\n- Each category: 1 product per pharmacy (nahdi, united, dawaa).\n- URLs: nahdi=https://www.nahdionline.com/en/catalogsearch/result/?q=ENCODED_NAME united=https://www.unitedpharmacy.sa/en/catalogsearch/result/?q=ENCODED_NAME dawaa=https://www.al-dawaa.com/catalogsearch/result/?q=ENCODED_NAME\n- Concise clinical usage instructions.\n\nJSON: {"categories":[{"category":"name in '+ln+'","products":[{"pharmacy":"nahdi","name":"English","usage":"'+ln+'","url":"URL"},{"pharmacy":"united","name":"...","usage":"...","url":"..."},{"pharmacy":"dawaa","name":"...","usage":"...","url":"..."}]}],"instructions":["step1","step2"]}';
 
-  try{
-    const r=await fetch('/api/groq',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'system',content:sys},{role:'user',content:`Type:${vT}\nSubtype:${vS}\nComplaint:${txt}\nLang:${ln}`}]})
-    });
-    if(!r.ok)throw new Error(r.status);
-    const d=await r.json();let raw=d.choices[0].message.content.trim();
-    if(raw.startsWith('```'))raw=raw.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'');
-    incU();render(JSON.parse(raw));
-  }catch(e){console.error(e);showM('er',t('errM'))}
-  finally{btn.classList.remove('busy');btn.disabled=false}
+  var usr='Type:'+vT+'\nSubtype:'+vS+'\nComplaint:'+txt+'\nLang:'+ln;
+
+  fetch('/api/groq',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  })
+  .then(function(r){
+    if(!r.ok) throw new Error(r.status);
+    return r.json();
+  })
+  .then(function(d){
+    var raw=d.choices[0].message.content.trim();
+    if(raw.indexOf('```')===0) raw=raw.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'');
+    var result=JSON.parse(raw);
+    incU();
+    render(result);
+  })
+  .catch(function(e){
+    console.error(e);
+    showMsg('err',t('errM'));
+  })
+  .finally(function(){
+    btn.classList.remove('busy');
+    btn.disabled=false;
+  });
 }
 
 function render(data){
   document.getElementById('formArea').style.display='none';
-  document.querySelector('.page-hdr').style.display='none';
-  const area=document.getElementById('resBox');
+  document.getElementById('pgTitle').style.display='none';
 
-  const phs=[
+  var phs=[
     {k:'nahdi',n:t('nahdi'),e:t('nahdiE'),c:'nh'},
     {k:'united',n:t('united'),e:t('unitedE'),c:'un'},
     {k:'dawaa',n:t('dawaa'),e:t('dawaaE'),c:'dw'}
   ];
 
-  const grp={nahdi:[],united:[],dawaa:[]};
-  (data.categories||[]).forEach(cat=>{
-    (cat.products||[]).forEach(p=>{if(grp[p.pharmacy])grp[p.pharmacy].push({...p,category:cat.category})});
-  });
-
-  let h=`<div class="results">
-    <div class="res-hdr">
-      <div class="overline">${t('rOv')}</div>
-      <h2>${t('rH')}</h2>
-      <p>${t('rP')}</p>
-    </div>`;
-
-  phs.forEach((ph,i)=>{
-    const items=grp[ph.k];
-    h+=`<div class="pharm-sec ${ph.c} ${i===0?'open':''}" id="sec_${ph.k}">
-      <div class="pharm-bar" onclick="togP('${ph.k}')">
-        <span class="pb-dot"></span>
-        <div class="pb-info"><div class="pb-name">${ph.n}</div><div class="pb-en">${ph.e}</div></div>
-        <span class="pb-count">${items.length} ${t('itm')}</span>
-        <div class="pb-arrow">▾</div>
-      </div>
-      <div class="pharm-body"><div class="pharm-inner">`;
-    items.forEach(p=>{
-      h+=`<div class="prod-card">
-        <div class="prod-top">
-          <span class="prod-cat">${esc(p.category)}</span>
-          <a class="prod-open" href="${esc(p.url)}" target="_blank" rel="noopener">${t('vw')} ↗</a>
-        </div>
-        <div class="prod-name">${esc(p.name)}</div>
-        <div class="prod-use">${esc(p.usage)}</div>
-      </div>`;
-    });
-    h+=`</div></div></div>`;
-  });
-
-  if(data.instructions?.length){
-    h+=`<div class="ins"><h4>${t('insT')}</h4><ol>`;
-    data.instructions.forEach(s=>{h+=`<li>${esc(s)}</li>`});
-    h+=`</ol></div>`;
+  var grp={nahdi:[],united:[],dawaa:[]};
+  var cats=data.categories||[];
+  for(var i=0;i<cats.length;i++){
+    var prods=cats[i].products||[];
+    for(var j=0;j<prods.length;j++){
+      var p=prods[j];
+      if(grp[p.pharmacy]){
+        p.category=cats[i].category;
+        grp[p.pharmacy].push(p);
+      }
+    }
   }
 
-  h+=`<button class="again" onclick="rst()">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <path d="M3 10a7 7 0 0 1 7-7 7 7 0 0 1 6 3.5M17 10a7 7 0 0 1-7 7 7 7 0 0 1-6-3.5"/>
-      <path d="M16 3v4h-4M4 17v-4h4"/>
-    </svg>
-    ${t('re')}
-  </button></div>`;
+  var h='<div class="results"><div class="res-hdr"><div class="over">'+t('rOv')+'</div><h2>'+t('rH')+'</h2><p>'+t('rP')+'</p></div>';
 
-  area.innerHTML=h;
+  for(var x=0;x<phs.length;x++){
+    var ph=phs[x];
+    var items=grp[ph.k];
+    h+='<div class="ph '+ph.c+(x===0?' open':'')+'" id="ph_'+ph.k+'">';
+    h+='<div class="ph-bar" onclick="togPh(\''+ph.k+'\')">';
+    h+='<span class="ph-dot"></span>';
+    h+='<div class="ph-info"><div class="ph-name">'+ph.n+'</div><div class="ph-en">'+ph.e+'</div></div>';
+    h+='<span class="ph-cnt">'+items.length+' '+t('itm')+'</span>';
+    h+='<div class="ph-arr">▾</div>';
+    h+='</div><div class="ph-body"><div class="ph-inner">';
+
+    for(var y=0;y<items.length;y++){
+      var pr=items[y];
+      h+='<div class="pr">';
+      h+='<div class="pr-top"><span class="pr-cat">'+esc(pr.category)+'</span>';
+      h+='<a class="pr-link" href="'+esc(pr.url)+'" target="_blank" rel="noopener">'+t('vw')+' ↗</a></div>';
+      h+='<div class="pr-name">'+esc(pr.name)+'</div>';
+      h+='<div class="pr-use">'+esc(pr.usage)+'</div>';
+      h+='</div>';
+    }
+    h+='</div></div></div>';
+  }
+
+  if(data.instructions&&data.instructions.length){
+    h+='<div class="ins"><h4>'+t('insT')+'</h4><ol>';
+    for(var z=0;z<data.instructions.length;z++){
+      h+='<li>'+esc(data.instructions[z])+'</li>';
+    }
+    h+='</ol></div>';
+  }
+
+  h+='<button class="again-btn" onclick="rst()">'+t('re')+'</button></div>';
+
+  document.getElementById('out').innerHTML=h;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function togP(k){document.getElementById('sec_'+k).classList.toggle('open')}
-
-function rst(){
-  document.getElementById('resBox').innerHTML='';
-  document.getElementById('formArea').style.display='';
-  document.querySelector('.page-hdr').style.display='';
-  vT=null;vS=null;
-  document.querySelectorAll('.type-card,.sub-btn').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('cta').value='';
+function togPh(k){
+  var el=document.getElementById('ph_'+k);
+  if(el.classList.contains('open')) el.classList.remove('open');
+  else el.classList.add('open');
 }
 
-function showM(c,m){document.getElementById('resBox').innerHTML=`<div class="msg ${c}">${esc(m)}</div>`}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function rst(){
+  document.getElementById('out').innerHTML='';
+  document.getElementById('formArea').style.display='';
+  document.getElementById('pgTitle').style.display='';
+  vT=null;vS=null;
+  var cards=document.querySelectorAll('.type-card,.sub-btn');
+  for(var i=0;i<cards.length;i++) cards[i].classList.remove('on');
+  document.getElementById('ta').value='';
+}
+
+function showMsg(type,msg){
+  var cls=type==='err'?'msg-err':'msg-lim';
+  document.getElementById('out').innerHTML='<div class="msg '+cls+'">'+esc(msg)+'</div>';
+}
+
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 </script>
 
 </body>

@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/groq.js": {
-      "maxDuration": 30
-    }
-  }
-}

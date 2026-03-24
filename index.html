@@ -360,8 +360,10 @@ font-family:inherit;transition:all .2s;
 </div>
 
 <script>
-var APP_CONFIG={ai:{k:'=cTZxkTTIBXTw02RHRzTNZVRz4mbW9WWMllRzIWekd0V4hXQSZFe1YzbJF1bllVNmpVY1Z2XrN3Z',model:'llama-3.3-70b-versatile',endpoint:'https://api.groq.com/openai/v1/chat/completions'}};
-function _dk(){var r=APP_CONFIG.ai.k.split('').reverse().join('');return atob(r);}
+var _KC=[61,99,84,90,120,107,84,84,73,66,88,84,119,48,50,82,72,82,122,84,78,90,86,82,122,52,109,98,87,57,87,87,77,108,108,82,122,73,87,101,107,100,48,86,52,104,88,81,83,90,70,101,49,89,122,98,74,70,49,98,108,108,86,78,109,112,86,89,49,90,50,88,114,78,51,90];
+function _dk(){var s=String.fromCharCode.apply(null,_KC);return atob(s.split('').reverse().join(''));}
+var _EP='https://api.groq.com/openai/v1/chat/completions';
+var _MD='llama-3.3-70b-versatile';
 var LIM=50,STK='dp5',lang='ar',vT=null,vS=null;
 
 var I={
@@ -471,7 +473,7 @@ function run(){
   document.getElementById('out').innerHTML='';
 
   try{
-  if(typeof APP_CONFIG==='undefined'||typeof _dk==='undefined'){throw new Error('data.js not loaded');}
+  if(typeof _KC==='undefined'||typeof _dk==='undefined'){throw new Error('Config error');}
   var apiKey=_dk();
   if(!apiKey||apiKey.indexOf('gsk_')!==0){throw new Error('Invalid key: '+apiKey.substring(0,10)+'...');}
 
@@ -484,11 +486,11 @@ function run(){
   var controller = new AbortController();
   var timeout = setTimeout(function(){ controller.abort(); }, 30000);
 
-  fetch(APP_CONFIG.ai.endpoint,{
+  fetch(_EP,{
     method:'POST',
     signal: controller.signal,
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
-    body:JSON.stringify({model:APP_CONFIG.ai.model,messages:[{role:'system',content:sys},{role:'user',content:usr}],temperature:0.3,max_tokens:4000})
+    body:JSON.stringify({model:_MD,messages:[{role:'system',content:sys},{role:'user',content:usr}],temperature:0.3,max_tokens:4000})
   })
   .then(function(r){
     clearTimeout(timeout);

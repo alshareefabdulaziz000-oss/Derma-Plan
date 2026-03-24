@@ -299,7 +299,7 @@ font-family:inherit;transition:all .2s;
       </div>
       <span class="hdr-name">DermaPlan</span>
     </div>
-    <button class="hdr-sw" id="sw" onclick="flip()"></button>
+      <button class="hdr-sw" id="sw" onclick="flip()"></button>
   </div>
 
   <div class="page-title" id="pgTitle">
@@ -358,6 +358,8 @@ font-family:inherit;transition:all .2s;
   <div id="out"></div>
   <div class="foot" id="ft"></div>
 </div>
+
+<script src="data.js"></script>
 
 <script>
 var LIM=50,STK='dp5',lang='ar',vT=null,vS=null;
@@ -474,10 +476,10 @@ function run(){
 
   var usr='Type:'+vT+'\nSubtype:'+vS+'\nComplaint:'+txt+'\nLang:'+ln;
 
-  fetch('/api/groq',{
+  fetch(APP_CONFIG.ai.endpoint,{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+_dk()},
+    body:JSON.stringify({model:APP_CONFIG.ai.model,messages:[{role:'system',content:sys},{role:'user',content:usr}],temperature:0.3,max_tokens:4000})
   })
   .then(function(r){
     if(!r.ok) throw new Error(r.status);

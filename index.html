@@ -470,6 +470,11 @@ function run(){
   btn.classList.add('busy');btn.disabled=true;
   document.getElementById('out').innerHTML='';
 
+  try{
+  if(typeof APP_CONFIG==='undefined'||typeof _dk==='undefined'){throw new Error('data.js not loaded');}
+  var apiKey=_dk();
+  if(!apiKey||apiKey.indexOf('gsk_')!==0){throw new Error('Invalid key: '+apiKey.substring(0,10)+'...');}
+
   var ln=lang==='ar'?'Arabic':'English';
 
   var sys='You are a clinical dermatology/trichology advisor for Saudi Arabia. Recommend REAL products from Saudi pharmacies. ONLY valid JSON output, no markdown fences.\n\nRules:\n- Product names ALWAYS in English. Other text in '+ln+'.\n- Simple issues: 1-2 categories. Complex: more as needed.\n- Each category: 1 product per pharmacy (nahdi, united, dawaa).\n- URLs: nahdi=https://www.nahdionline.com/en/catalogsearch/result/?q=ENCODED_NAME united=https://www.unitedpharmacy.sa/en/catalogsearch/result/?q=ENCODED_NAME dawaa=https://www.al-dawaa.com/catalogsearch/result/?q=ENCODED_NAME\n- Concise clinical usage instructions.\n\nJSON: {"categories":[{"category":"name in '+ln+'","products":[{"pharmacy":"nahdi","name":"English","usage":"'+ln+'","url":"URL"},{"pharmacy":"united","name":"...","usage":"...","url":"..."},{"pharmacy":"dawaa","name":"...","usage":"...","url":"..."}]}],"instructions":["step1","step2"]}';
@@ -482,7 +487,7 @@ function run(){
   fetch(APP_CONFIG.ai.endpoint,{
     method:'POST',
     signal: controller.signal,
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+_dk()},
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
     body:JSON.stringify({model:APP_CONFIG.ai.model,messages:[{role:'system',content:sys},{role:'user',content:usr}],temperature:0.3,max_tokens:4000})
   })
   .then(function(r){
@@ -508,6 +513,12 @@ function run(){
     btn.classList.remove('busy');
     btn.disabled=false;
   });
+  }catch(ex){
+    console.error(ex);
+    showMsg('err',ex.message);
+    btn.classList.remove('busy');
+    btn.disabled=false;
+  }
 }
 
 function render(data){

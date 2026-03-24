@@ -1,1 +1,0 @@
-var APP_CONFIG={ai:{k:’=cTZxkTTIBXTw02RHRzTNZVRz4mbW9WWMllRzIWekd0V4hXQSZFe1YzbJF1bllVNmpVY1Z2XrN3Z’,model:‘llama-3.3-70b-versatile’,endpoint:‘https://api.groq.com/openai/v1/chat/completions’}};function _dk(){var r=APP_CONFIG.ai.k.split(’’).reverse().join(’’);return atob(r);}
